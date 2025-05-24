@@ -1,51 +1,97 @@
-# Transportation
+# 🚗 Transportation API
 
-# Használt technológia:
--ASP.NET Core Web API
--In-memory Data storage
--c# languge
+Egy ASP.NET Core Web API projekt járművek kezelésére és utazás-ajánlások generálására.
 
-#Felépítés
-rétegzett alkalmazás ami tartalmaz
--Data
--Endpoint
--Entities
--Logic
+---
 
-#Data:
--Csak az Entities réteget ismeri
--TransportaionContext.cs: Az adatbázis kezelésért felel
--Repository.cs: CRUD műveleteket biztosít bármely Entityre
+## 🔧 Használt technológiák
 
-#Endpoint
--Minden réteget ismer
--VehicleController.cs: a HTTP kéréseket kezeli és továbbítja őket a Logic réteg felé
-  #végpontok:
-    -Get /vehicle ->	Összes jármű lekérdezése.
-    -GET	/vehicle/{id} -> Egy jármű lekérdezése ID alapján.
-    -POST	/vehicle -> Új jármű létrehozása DTO alapján.
-    -PUT	/vehicle/{id} -> Létező jármű frissítése.
-    -DELETE	/vehicle/{id} -> Jármű törlése ID alapján.
-    -POST	/vehicle/trip-suggestions -> Javasolt járművek listázása Utas- és távolságigény alapján.
-Program.cs: 
-  -Az egész rendszer beállítása.
-  -Szolgáltatások regisztrálása.
-  -Alkalmazás elindítása.
-#Entities
--DTO-kat és az Vehicle entityt tartalamazza
+- **ASP.NET Core Web API**
+- **MSSQL Local DB**
+- **C# programozási nyelv**
 
-#Logic
--A Data és az Entities réteget ismeri
--DtoProvider.cs: Mapper segítségével átalakítja a Vehicle-t VehicleViewDto-ra és a VehicleCreateUpdateDto-t Vehicle-re.
--VehicleLogic.cs:
-  -Az alkalmazás üzleti logikája
-  -A VehicleControllertől kapott kérések logikáját végzi el és a Repository segítségével hajtja végre.
-  -CRUD műveletek DTO segítségével
-  -GetTripSuggestion(int passengers, int distance):
-    -Kiválasztja azokat a járműveket, amelyek hatótávja elég a távolság megtételéhez.
-    -Kombinációkat generál különböző számú járművel, amelyek képesek elvinni az összes utast.
-    -Minden kombinációra kiszámítja a profitot.
-    -A legjobb 1000 javaslatot visszaadja (Túl nagy adat esetén ne akadjon ki a swagger).
-    -Használja:
-      -GenerateCombinationsBasedOnK(List<Vehicle> vehicles, int k): kombinációkat generál adott méretre. Méret: O(k*(n alatt k))
-      -CalculateProfit(List<Vehicle> vehicles, int distance, int passengers): a kombinációk nyereségét számítja ki.
+---
+
+## 🏗️ Felépítés
+
+A projekt rétegzett architektúrára épül, az alábbi rétegekkel:
+
+- `Data`
+- `Entities`
+- `Logic`
+- `Endpoint`
+
+---
+
+## 📁 Rétegek részletesen
+
+### 📦 Data
+
+- Csak az `Entities` réteget ismeri.
+- **TransportationContext.cs** – az in-memory adatbázis kezelésért felel.
+- **Repository.cs** – általános CRUD műveletek bármely entitásra.
+
+---
+
+### 🚘 Endpoint
+
+- Minden réteget ismer.
+- **VehicleController.cs** – kezeli a HTTP kéréseket, és továbbítja azokat a `Logic` rétegnek.
+  
+#### API végpontok:
+
+| Módszer | Útvonal | Leírás |
+|--------|---------|--------|
+| `GET` | `/vehicle` | Összes jármű lekérdezése |
+| `GET` | `/vehicle/{id}` | Egy jármű lekérdezése ID alapján |
+| `POST` | `/vehicle` | Új jármű létrehozása DTO alapján |
+| `PUT` | `/vehicle/{id}` | Létező jármű frissítése |
+| `DELETE` | `/vehicle/{id}` | Jármű törlése ID alapján |
+| `POST` | `/vehicle/trip-suggestions` | Javasolt járművek listázása utas- és távolságigény alapján |
+
+- **Program.cs** – rendszer konfigurációja, szolgáltatások regisztrálása, alkalmazás indítása.
+
+---
+
+### 📄 Entities
+
+- DTO-k és a `Vehicle` entitás definíciója.
+
+---
+
+### 🧠 Logic
+
+- Ismeri a `Data` és `Entities` rétegeket.
+  
+#### Fájlok:
+- **DtoProvider.cs**
+  - Mapper használata: `Vehicle` ↔ `VehicleViewDto` / `VehicleCreateUpdateDto`
+  
+- **VehicleLogic.cs**
+  - Üzleti logika megvalósítása
+  - CRUD műveletek DTO-kon keresztül
+  - **GetTripSuggestion(int passengers, int distance):**
+    - Szűri a járműveket hatótáv alapján
+    - Generál járműkombinációkat az utasok számához
+    - Kiszámolja minden kombináció profitját
+    - Visszaadja a legjobb 1000 javaslatot
+    - Használt metódusok:
+      - GenerateCombinationsBasedOnK(List<Vehicle> vehicles, int k)
+        - Kombinációk generálása adott méret alapján
+      - CalculateProfit(List<Vehicle> vehicles, int distance, int passengers)
+        - Profit számítása az adott kombinációkra
+
+---
+
+## ✅ Példák és Tesztelés
+
+Swagger UI-val tesztelhető: `https://localhost:{port}/swagger`
+
+---
+
+## 📌 Megjegyzés
+
+A rendszer in-memory adatkezelést használ, így minden újraindítás után törlődnek az adatok.
+
+---
+
